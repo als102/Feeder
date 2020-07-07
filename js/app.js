@@ -24,32 +24,33 @@ const article = document.querySelectorAll('article');
 // Select search and link to sources
 const $sourceOne = $('li:eq( 1 )');
 //console.log($sourceOne);
-$sourceOne.attr(techKotakuApi);
+//$sourceOne.attr(techKotakuApi);
 
 const $sourceTwo = $('li:eq( 2 )');
-//$sourceTwo.text('Tech')
+//$sourceTwo.text('Kotaku').addClass('highlight')
 //console.log($sourceTwo);
 const $sourceThree = $('li:eq( 3 )');
-const currentSource = document.querySelector('li a');
+const $currentSource = $('li a');
 
-console.log(currentSource);
+console.log($currentSource);
+//$currentSource.text("News.com");
 
-const header1 = document.querySelector('header .container h1');
-
-// Search bar variables
+const $header1 = $('header .container h1');
+//console.log($header1);
+// Search bar variables todo add search functionality
 const searchIcon = document.querySelector('#search a');
 const searchBox = document.querySelector('#search input');
 
-// //Show loader on launch
+// Show loader on launch function
+function showLoader() {
+	$(window).on('load', function () {
+		$('#popUp').removeClass('hidden');
+		$('#popUp a').hide();
+	});
+}
 
-$(window).on('load', function () {
-	$('#popUp').removeClass('hidden');
-	$('#popUp a').hide();
-});
-
+showLoader();
 // // fetch headline data api Source One
-
-
 
 fetchHead();
 
@@ -60,6 +61,7 @@ function fetchHead() {
 		})
 		.then((data) => {
 			//console.log(data);
+
 			headlineDom(data);
 			return data;
 		})
@@ -83,7 +85,7 @@ function headlineDom(data) {
 		let image = articles[i].urlToImage;
 		let preview = articles[i].description;
 		let title = articles[i].title;
-		let count = Math.floor(Math.random() * 100);
+		let count = Math.floor(Math.random() * 100) + ' comments';
 		let link = articles[i].url;
 		//hides template
 		$(article).attr('id', `template`);
@@ -142,6 +144,8 @@ function hideLoader() {
 // Add click function for source one
 $sourceOne.on('click', (error) => {
 	error.preventDefault();
+	$('#popUp').removeClass('hidden');
+	$('#popUp a').hide();
 	$('.article').remove();
 	$('#main').load(fetchHead());
 });
@@ -149,6 +153,8 @@ $sourceOne.on('click', (error) => {
 // // Source Two click function-----------------Source  Two
 $sourceTwo.on('click', (error) => {
 	error.preventDefault();
+	//$('#popUp').removeClass('hidden');
+	//	$('#popUp a').hide();
 	$('.article').remove();
 
 	// techKotakuApi fetch Kotaku data
@@ -159,6 +165,7 @@ $sourceTwo.on('click', (error) => {
 		})
 		.then((data) => {
 			kotakuDom(data);
+			hideLoader(data);
 			//console.log(data);
 		})
 		.catch((error) => {
@@ -175,10 +182,11 @@ $sourceTwo.on('click', (error) => {
 			let image = articles[i].urlToImage;
 			let preview = articles[i].description;
 			let title = articles[i].title;
-			let count = Math.floor(Math.random() * 100);
+			let count = Math.floor(Math.random() * 100) + ' comments';
 			let link = articles[i].url;
 
 			//     // console.log(content);
+			// article layout variable string
 			let articleLayOut = `
     	<article id="article${i}" class="article">
     	    <section class="featuredImage">
@@ -216,33 +224,31 @@ $sourceTwo.on('click', (error) => {
 	}
 });
 
-//------------------------- Source three
+//------------------------- Source three Daily news
 
 $sourceThree.on('click', (error) => {
 	error.preventDefault();
+	$('#popUp').removeClass('hidden');
+	$('#popUp a').hide();
 	$('.article').remove();
-	//$sourceOne.text('Kotaku.com');
-	// techKotakuApi
+
+	// fetch Daily news
 
 	fetch(dailyWtfUrl)
 		.then((response) => {
 			return response.json();
 		})
 		.then((data) => {
-			console.log(data);
-			dailyWTF(data);
-			return data;
-		})
-		.then(function (data) {
 			//console.log(data);
 			hideLoader(data);
+			dailyWTF(data);
 			return data;
 		})
 		.catch((error) => {
 			console.log(error);
 		});
 
-	// functiom to add data to page
+	// functiom to add Daily news data and article layout
 	function dailyWTF(data) {
 		let dailyArt = data.id;
 		for (let i = 0; i < data.length; i++) {
@@ -263,14 +269,15 @@ $sourceThree.on('click', (error) => {
 
 			let articleLayOut = `
       <article id="dailyArt${i}" class="article">
-      <section class="featuredImage"> <img src=${authorImage} alt="" />
-      </section><section class="articleContent">
-      <a href="#" id="title">
-      <h3>${dailyTitle}</h3></a> 
-      <h6>${dailyPreview}</h6>
-      </section>   
-      <section class="impressions">${dailyCount}
-    	</section><div class="clearfix"></div>
+          <section class="featuredImage"> 
+            <img src=${authorImage} alt="" />
+          </section>
+          <section class="articleContent">
+            <a href="#" id="title"><h3>${dailyTitle}</h3></a> 
+            <h6>${dailyPreview}</h6>
+          </section>   
+          <section class="impressions">${dailyCount}
+    	    </section><div class="clearfix"></div>
     	</article>`;
 
 			$('#main').append(articleLayOut);
@@ -290,4 +297,16 @@ $sourceThree.on('click', (error) => {
 			});
 		}
 	}
+});
+
+//Feedr button functionality
+$header1.on('click', (error) => {
+	error.preventDefault();
+	$('.article').remove();
+	$('#main').load(fetchHead());
+});
+
+//Search in progress
+$('#search a').on('click', (error) => {
+	$('#search').toggleClass('active');
 });
