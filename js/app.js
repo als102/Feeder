@@ -6,14 +6,14 @@
 const headLineurl = `https://accesscontrolalloworiginall.herokuapp.com/http://newsapi.org/v2/top-headlines?country=us&apiKey=${APIKEY}`;
 const techKotakuApi = `https://accesscontrolalloworiginall.herokuapp.com/https://newsapi.org/v2/everything?domains=kotaku.com,thenextweb.com&apiKey=${APIKEY}`;
 const dailyWtfUrl =
-  'https://accesscontrolalloworiginall.herokuapp.com/http://thedailywtf.com/api/articles/recent/15';
+	'https://accesscontrolalloworiginall.herokuapp.com/http://thedailywtf.com/api/articles/recent';
 
 // Select DOM elements variables
 const article = document.querySelectorAll('article');
-const imageThumb = document.querySelector('.featuredImage img');
-const title = document.querySelector('.articleContent a h3');
-const impressions = document.querySelector('.impressions');
-const subTitle = document.querySelector('.articleContent h6');
+// const imageThumb = document.querySelector('.featuredImage img');
+// const title = document.querySelector('.articleContent a h3');
+// const impressions = document.querySelector('.impressions');
+// const subTitle = document.querySelector('.articleContent h6');
 
 //console.log(article);
 // console.log(imageThumb);
@@ -21,6 +21,7 @@ const subTitle = document.querySelector('.articleContent h6');
 // console.log(impressions);
 // console.log(subTitle);
 
+// Select search and link to sources
 const $sourceOne = $('li:eq( 1 )');
 //console.log($sourceOne);
 $sourceOne.attr(techKotakuApi);
@@ -29,7 +30,9 @@ const $sourceTwo = $('li:eq( 2 )');
 //$sourceTwo.text('Tech')
 //console.log($sourceTwo);
 const $sourceThree = $('li:eq( 3 )');
-const currentSource = document.querySelector('#currentSource');
+const currentSource = document.querySelector('li a');
+
+console.log(currentSource);
 
 const header1 = document.querySelector('header .container h1');
 
@@ -38,47 +41,57 @@ const searchIcon = document.querySelector('#search a');
 const searchBox = document.querySelector('#search input');
 
 // //Show loader on launch
+
 $(window).on('load', function () {
-  $('#popUp').removeClass('hidden');
-  $('#popUp a').hide();
+	$('#popUp').removeClass('hidden');
+	$('#popUp a').hide();
 });
 
 // // fetch headline data api Source One
 
-fetch(headLineurl)
-  .then((response) => {
-    return response.json();
-  })
-  .then((data) => {
-    //console.log(data);
-    headlineDom(data);
-    return data;
-  })
-  .then(function (data) {
-    // console.log(data);
-    hideLoader(data);
-    return data;
-  })
-  .catch((error) => {
-    console.log(error);
-  });
 
+
+fetchHead();
+
+function fetchHead() {
+	fetch(headLineurl)
+		.then((response) => {
+			return response.json();
+		})
+		.then((data) => {
+			//console.log(data);
+			headlineDom(data);
+			return data;
+		})
+		.then(function (data) {
+			// console.log(data);
+			hideLoader(data);
+			return data;
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+}
+
+// function to add headline data to the DOM
 function headlineDom(data) {
-  let articles = data.articles;
+	let articles = data.articles;
 
-  for (let i = 0; i < articles.length; i++) {
-    let content = data.articles[i].content;
-    // console.log(content);
-    let image = articles[i].urlToImage;
-    let preview = articles[i].description;
-    let title = articles[i].title;
-    let count = Math.floor(Math.random() * 100);
-    let link = articles[i].url;
-    $(article).attr('id', `template`);
-    $('#template *').addClass('hidden');
+	for (let i = 0; i < articles.length; i++) {
+		let content = data.articles[i].content;
+		// console.log(content);
+		let image = articles[i].urlToImage;
+		let preview = articles[i].description;
+		let title = articles[i].title;
+		let count = Math.floor(Math.random() * 100);
+		let link = articles[i].url;
+		//hides template
+		$(article).attr('id', `template`);
+		$('#template *').addClass('hidden');
 
-    //    // console.log(content);
-    let articleLayOut = `
+		//    // console.log(content);
+		// article layout variable
+		let articleLayOut = `
     	<article id="article${i}" class="article">
     	    <section class="featuredImage">
     	       <img src=${image} alt="" />
@@ -94,72 +107,79 @@ function headlineDom(data) {
     	</article>
     `;
 
-    $('#main').append(articleLayOut);
+		$('#main').append(articleLayOut);
 
-    // open pop up with link to news source
+		// open pop up with link to news source
 
-    $('#article' + i).on('click', function (event) {
-      $('#popUp .container').show();
-      event.preventDefault();
-      $('#popUp a').show();
-      $('#popUp').removeClass('loader hidden');
+		$('#article' + i).on('click', function (event) {
+			$('#popUp .container').show();
+			event.preventDefault();
+			$('#popUp a').show();
+			$('#popUp').removeClass('loader hidden');
 
-      $('#popUp .container h1').text(title);
-      $('#popUp p').text(content);
+			$('#popUp .container h1').text(title);
+			$('#popUp p').text(content);
 
-      $('.popUpAction').text('Read more from News');
-      $('.popUpAction').attr('href', link);
-    });
+			$('.popUpAction').text('Read more from News');
+			$('.popUpAction').attr('href', link);
+		});
 
-    hidePop();
-  }
+		hidePop();
+	}
 }
 
-//hide the pop-up selects "X"
+//function to hide the pop-up "X" to close pop up
 const hidePop = function () {
-  $('.closePopUp').on('click', function (event) {
-    $('#popUp').addClass('loader hidden');
-  });
+	$('.closePopUp').on('click', function (event) {
+		$('#popUp').addClass('loader hidden');
+	});
 };
 
-// hide the loader
+// hide the loader when the page first loads
 function hideLoader() {
-  $('#popUp').addClass('hidden');
+	$('#popUp').addClass('hidden');
 }
+// Add click function for source one
+$sourceOne.on('click', (error) => {
+	error.preventDefault();
+	$('.article').remove();
+	$('#main').load(fetchHead());
+});
 
 // // Source Two click function-----------------Source  Two
 $sourceTwo.on('click', (error) => {
-  error.preventDefault();
-  $('.article').remove();
-  //$sourceOne.text('Kotaku.com');
-  // techKotakuApi
+	error.preventDefault();
+	$('.article').remove();
 
-  fetch(techKotakuApi)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      kotakuDom(data);
-      //console.log(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+	// techKotakuApi fetch Kotaku data
 
-  function kotakuDom(data) {
-    let articles = data.articles;
+	fetch(techKotakuApi)
+		.then((response) => {
+			return response.json();
+		})
+		.then((data) => {
+			kotakuDom(data);
+			//console.log(data);
+		})
+		.catch((error) => {
+			console.log(error);
+		});
 
-    for (let i = 0; i < articles.length; i++) {
-      let content = data.articles[i].content;
+	// function to add Kotaku data to the DOM
+	function kotakuDom(data) {
+		let articles = data.articles;
 
-      let image = articles[i].urlToImage;
-      let preview = articles[i].description;
-      let title = articles[i].title;
-      let count = Math.floor(Math.random() * 100);
-      let link = articles[i].url;
+		for (let i = 0; i < articles.length; i++) {
+			let content = data.articles[i].content;
 
-      //     // console.log(content);
-      let articleLayOut = `
+			let image = articles[i].urlToImage;
+			let preview = articles[i].description;
+			let title = articles[i].title;
+			let count = Math.floor(Math.random() * 100);
+			let link = articles[i].url;
+
+			//     // console.log(content);
+			let articleLayOut = `
     	<article id="article${i}" class="article">
     	    <section class="featuredImage">
     	       <img src=${image} alt="" />
@@ -175,110 +195,99 @@ $sourceTwo.on('click', (error) => {
     	</article>
     `;
 
-      $('#main').append(articleLayOut);
+			$('#main').append(articleLayOut);
 
-      // open pop up with link to news source
-      $('#article' + i).on('click', function (event) {
-        $('#popUp .container').show();
-        event.preventDefault();
-        $('#popUp a').show();
-        $('#popUp').removeClass('loader hidden');
+			// open pop up with link to Kotaku news  source
+			$('#article' + i).on('click', function (event) {
+				$('#popUp .container').show();
+				event.preventDefault();
+				$('#popUp a').show();
+				$('#popUp').removeClass('loader hidden');
 
-        $('#popUp .container h1').text(title);
-        $('#popUp p').text(content);
+				$('#popUp .container h1').text(title);
+				$('#popUp p').text(content);
 
-        $('.popUpAction').text('Read more from Kotaku');
-        $('.popUpAction').attr('href', link);
-      });
+				$('.popUpAction').text('Read more from Kotaku');
+				$('.popUpAction').attr('href', link);
+			});
 
-      hidePop();
-    }
-  }
-
-  //hide the pop-up selects "X"
-  const hidePop = function () {
-    $('.closePopUp').on('click', function (event) {
-      $('#popUp').addClass('loader hidden');
-    });
-  };
-
-  // hide the loader
-  function hideLoader() {
-    $('#popUp').addClass('hidden');
-  }
+			hidePop();
+		}
+	}
 });
 
 //------------------------- Source three
 
 $sourceThree.on('click', (error) => {
-  error.preventDefault();
-  $('.article').remove();
-  //$sourceOne.text('Kotaku.com');
-  // techKotakuApi
+	error.preventDefault();
+	$('.article').remove();
+	//$sourceOne.text('Kotaku.com');
+	// techKotakuApi
 
-  fetch(dailyWtfUrl)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      dailyWTF(data);
-      return data;
-    })
-    .then(function (data) {
-      console.log(data);
-      hideLoader(data);
-      return data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+	fetch(dailyWtfUrl)
+		.then((response) => {
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data);
+			dailyWTF(data);
+			return data;
+		})
+		.then(function (data) {
+			//console.log(data);
+			hideLoader(data);
+			return data;
+		})
+		.catch((error) => {
+			console.log(error);
+		});
 
-  function dailyWTF(data) {
-    let dailyArt = data.id;
-    for (let i = 0; i < data.length; i++) {
-      let article = data[i].BodyHtml;
-      //console.log(article);
-      let dailyPreview = data[i].SummaryHtml;
-      // console.log(preview);
-      let author = data[i].Author.ShortDescription;
-      console.log(author);
-      let dailyCount = data[i].CachedCommentCount;
-      //console.log(count);
-      let authorImage = data[i].Author.ImageUrl;
-      console.log(authorImage);
-      let link = data[i].Url;
+	// functiom to add data to page
+	function dailyWTF(data) {
+		let dailyArt = data.id;
+		for (let i = 0; i < data.length; i++) {
+			let dailyArt = data[i].BodyHtml;
+			//console.log(dailyArt);
+			let dailyPreview = data[i].SummaryHtml;
+			//console.log(dailyPreview);
+			let dailyTitle = data[i].Title;
+			//console.log(dailyTitle);
+			let dailyCount = data[i].CachedCommentCount;
+			//console.log(dailyCount);
+			let authorImage = data[i].Author.ImageUrl;
+			//console.log(authorImage);
+			let dailyLink = data[i].Url;
+			//console.log(dailyLink);
 
-      let articleLayOut = `
-//     	<article id="dailyArt" class="article">
-//     	    <section class="featuredImage">
-//     	       <img src=${authorImage} alt="" />
-//     	    </section>
-//     	    <section class="articleContent">
-//     	         <a href="#" id="title"><h3>${author}</h3></a>
-//     	         <h6>${dailyPreview}</h6>
-//     	    </section>
-//     	    <section class="impressions">
-//     	         ${dailyCount}
-//     	    </section>
-//     	    <div class="clearfix"></div>
-//     	</article>
-//     `;
+			// 		// fix hash tags on layout todo
 
-      $('#main').append(articleLayOut);
-      //open pop up with link to news source
-      $('article' + i).on('click', function (event) {
-        $('#popUp .container').show();
-        event.preventDefault();
-        $('#popUp a').show();
-        $('#popUp').removeClass('loader hidden');
+			let articleLayOut = `
+      <article id="dailyArt${i}" class="article">
+      <section class="featuredImage"> <img src=${authorImage} alt="" />
+      </section><section class="articleContent">
+      <a href="#" id="title">
+      <h3>${dailyTitle}</h3></a> 
+      <h6>${dailyPreview}</h6>
+      </section>   
+      <section class="impressions">${dailyCount}
+    	</section><div class="clearfix"></div>
+    	</article>`;
 
-        $('#popUp .container h1').text(title);
-        $('#popUp p').text(content);
+			$('#main').append(articleLayOut);
 
-        $('.popUpAction').text('Read more from Daily');
-        $('.popUpAction').attr('href', link);
-      });
-    }
-  }
+			//open pop up with link to news source
+			$('#dailyArt' + i).on('click', function (event) {
+				$('#popUp .container').show();
+				event.preventDefault();
+				$('#popUp a').show();
+				$('#popUp').removeClass('loader hidden');
+
+				$('#popUp .container h1').text(dailyTitle);
+				$('#popUp p').text(dailyPreview);
+
+				$('.popUpAction').text('Read more from Daily');
+				$('.popUpAction').attr('href', dailyLink);
+			});
+		}
+	}
 });
