@@ -11,7 +11,8 @@ const dailyWtfUrl =
 // Select DOM elements variables
 const article = document.querySelectorAll('article');
 // const imageThumb = document.querySelector('.featuredImage img');
-// const title = document.querySelector('.articleContent a h3');
+const $filter = $('#aritcleid');
+console.log($filter);
 // const impressions = document.querySelector('.impressions');
 // const subTitle = document.querySelector('.articleContent h6');
 
