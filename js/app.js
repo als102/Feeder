@@ -13,14 +13,6 @@ const article = document.querySelectorAll('article');
 // const imageThumb = document.querySelector('.featuredImage img');
 const $filter = $('#aritcleid');
 console.log($filter);
-// const impressions = document.querySelector('.impressions');
-// const subTitle = document.querySelector('.articleContent h6');
-
-//console.log(article);
-// console.log(imageThumb);
-// console.log(title);
-// console.log(impressions);
-// console.log(subTitle);
 
 // Select search and link to sources
 const $sourceOne = $('li:eq( 1 )');
@@ -62,13 +54,9 @@ function fetchHead() {
 		})
 		.then((data) => {
 			//console.log(data);
+			hideLoader(data);
 
 			headlineDom(data);
-			return data;
-		})
-		.then(function (data) {
-			// console.log(data);
-			hideLoader(data);
 			return data;
 		})
 		.catch((error) => {
@@ -88,7 +76,7 @@ function headlineDom(data) {
 		let title = articles[i].title;
 		let count = Math.floor(Math.random() * 100) + ' comments';
 		let link = articles[i].url;
-		//hides template
+		//hides template replace  with article layout
 		$(article).attr('id', `template`);
 		$('#template *').addClass('hidden');
 
@@ -97,7 +85,7 @@ function headlineDom(data) {
 		let articleLayOut = `
     	<article id="article${i}" class="article">
     	    <section class="featuredImage">
-    	       <img src=${image} alt="" />
+    	       <img src=${image} alt="thumbnail" />
     	    </section>
     	    <section class="articleContent">
     	         <a href="#" id="title"><h3>${title}</h3></a>
@@ -154,8 +142,8 @@ $sourceOne.on('click', (error) => {
 // // Source Two click function-----------------Source  Two
 $sourceTwo.on('click', (error) => {
 	error.preventDefault();
-	//$('#popUp').removeClass('hidden');
-	//	$('#popUp a').hide();
+	$('#popUp').removeClass('hidden');
+	$('#popUp a').hide();
 	$('.article').remove();
 
 	// techKotakuApi fetch Kotaku data
@@ -191,7 +179,7 @@ $sourceTwo.on('click', (error) => {
 			let articleLayOut = `
     	<article id="article${i}" class="article">
     	    <section class="featuredImage">
-    	       <img src=${image} alt="" />
+    	       <img src=${image} alt="thumbnail" />
     	    </section>
     	    <section class="articleContent">
     	         <a href="#" id="title"><h3>${title}</h3></a>
@@ -271,7 +259,7 @@ $sourceThree.on('click', (error) => {
 			let articleLayOut = `
       <article id="dailyArt${i}" class="article">
           <section class="featuredImage"> 
-            <img src=${authorImage} alt="" />
+            <img src=${authorImage} alt="thumbnail" />
           </section>
           <section class="articleContent">
             <a href="#" id="title"><h3>${dailyTitle}</h3></a> 
