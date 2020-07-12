@@ -10,26 +10,21 @@ const dailyWtfUrl =
 
 // Select DOM elements variables
 const article = document.querySelectorAll('article');
-// const imageThumb = document.querySelector('.featuredImage img');
+
 const $filter = $('#aritcleid');
 console.log($filter);
 
 // Select search and link to sources
 const $sourceOne = $('li:eq( 1 )');
-//console.log($sourceOne);
-//$sourceOne.attr(techKotakuApi);
-
 const $sourceTwo = $('li:eq( 2 )');
-//$sourceTwo.text('Kotaku').addClass('highlight')
-//console.log($sourceTwo);
 const $sourceThree = $('li:eq( 3 )');
-const $currentSource = $('li a');
+const $currentSource = $('span');
 
 console.log($currentSource);
 //$currentSource.text("News.com");
 
 const $header1 = $('header .container h1');
-//console.log($header1);
+
 // Search bar variables todo add search functionality
 const searchIcon = document.querySelector('#search a');
 const searchBox = document.querySelector('#search input');
@@ -55,6 +50,7 @@ function fetchHead() {
 		.then((data) => {
 			//console.log(data);
 			hideLoader(data);
+			$currentSource.text('News.com');
 
 			headlineDom(data);
 			return data;
@@ -154,6 +150,7 @@ $sourceTwo.on('click', (error) => {
 		})
 		.then((data) => {
 			kotakuDom(data);
+			$currentSource.text('Kotaku.com');
 			hideLoader(data);
 			//console.log(data);
 		})
@@ -230,6 +227,7 @@ $sourceThree.on('click', (error) => {
 		.then((data) => {
 			//console.log(data);
 			hideLoader(data);
+			$currentSource.text('DailyWTF.com');
 			dailyWTF(data);
 			return data;
 		})
